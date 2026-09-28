@@ -1,10 +1,36 @@
-# Python-generated files
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
 __pycache__/
-*.py[oc]
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
 build/
 dist/
-wheels/
-*.egg-info
 
-# Virtual environments
-.venv
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+*.log
+
+# Local document data - never commit financial documents
+data/documents/*
+!data/documents/.gitkeep
+
+# Research artifacts (models, datasets, results)
+research/**/outputs/
+*.ckpt
+*.safetensors
+*.gguf
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
