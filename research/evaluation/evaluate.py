@@ -7,4 +7,6 @@ reproducible results. Intentionally not implemented in Phase 1.
 
 
 def run_evaluation() -> None:
-    raise NotImplementedError("Evaluation experiments are planned after the research dataset phase.")
+    raise NotImplementedError(
+        "Evaluation experiments are planned after the research dataset phase."
+    )

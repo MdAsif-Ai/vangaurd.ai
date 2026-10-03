@@ -42,7 +42,5 @@ class ResearchService:
         await self._session.commit()
         return job
 
-    async def get_job(
-        self, *, organization_id: uuid.UUID, job_id: uuid.UUID
-    ) -> ResearchJob | None:
+    async def get_job(self, *, organization_id: uuid.UUID, job_id: uuid.UUID) -> ResearchJob | None:
         return await self._jobs.get(organization_id, job_id)

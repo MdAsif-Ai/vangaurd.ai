@@ -34,9 +34,7 @@ async def test_create_and_query_organization(
         session.add(models.Organization(name="Acme Corp"))
         await session.commit()
     async with session_factory() as session:
-        organization = (
-            await session.execute(select(models.Organization))
-        ).scalar_one()
+        organization = (await session.execute(select(models.Organization))).scalar_one()
         assert organization.name == "Acme Corp"
         assert organization.created_at is not None
 
@@ -46,9 +44,7 @@ async def test_session_rollback(session_factory: async_sessionmaker[AsyncSession
         session.add(models.Organization(name="Rollback Inc"))
         await session.rollback()
     async with session_factory() as session:
-        organizations = (
-            await session.execute(select(models.Organization))
-        ).scalars()
+        organizations = (await session.execute(select(models.Organization))).scalars()
         assert list(organizations) == []
 
 

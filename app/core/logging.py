@@ -40,4 +40,4 @@ def setup_logging(settings: Settings) -> None:
 
 def get_logger(name: str) -> logging.Logger:
     """Return a named logger (thin convenience wrapper)."""
-    return logging.getLogger(name)  
+    return logging.getLogger(name)

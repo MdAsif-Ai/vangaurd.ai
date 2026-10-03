@@ -143,7 +143,6 @@ class Document(TimestampMixin, Base):
     status: Mapped[DocumentStatus] = mapped_column(
         _str_enum(DocumentStatus), default=DocumentStatus.UPLOADED, server_default="uploaded"
     )
-    status_indexed: Mapped[None] = None  # documentation anchor; index declared below
     checksum: Mapped[str | None] = mapped_column(sa.String(128))
 
 

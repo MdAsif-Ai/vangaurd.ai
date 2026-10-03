@@ -1,31 +1,20 @@
-"""Evidence API. Returns real (currently empty) organization-scoped results."""
+"""Evidence API: single evidence lookup, organization-scoped.
+
+The research-job evidence listing lives in routes/research.py under
+/api/research/{job_id}/evidence. Keeping this router under its own
+/evidence prefix avoids a catch-all route at the API root, so unknown
+paths correctly return 404.
+"""
 
 import uuid
 
 from fastapi import APIRouter, HTTPException, status
 
 from app.api.dependencies import CurrentUser, DbSession
-from app.schemas.research import EvidenceListResponse, EvidenceResponse
+from app.schemas.research import EvidenceResponse
 from app.services.evidence import EvidenceService
 
 router = APIRouter()
-
-
-@router.get("/research/{research_job_id}/evidence", response_model=EvidenceListResponse)
-async def list_research_evidence(
-    research_job_id: uuid.UUID, session: DbSession, current_user: CurrentUser
-) -> EvidenceListResponse:
-    """List evidence attached to a research job's claims (empty for now)."""
-    evidence = await EvidenceService(session).list_for_job(
-        organization_id=current_user.organization_id, research_job_id=research_job_id
-    )
-    if evidence is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Research job not found"
-        )
-    return EvidenceListResponse(
-        items=[EvidenceResponse.model_validate(item) for item in evidence]
-    )
 
 
 @router.get("/{evidence_id}", response_model=EvidenceResponse)

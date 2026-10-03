@@ -8,13 +8,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Install the project (runtime dependencies only, no dev tools)
+# Install the project (runtime dependencies only, no dev tools).
+# --timeout/--retries make the build resilient to flaky PyPI connections.
 COPY pyproject.toml README.md LICENSE ./
 COPY alembic.ini ./
 COPY app ./app
 COPY migrations ./migrations
 COPY scripts ./scripts
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir --timeout 120 --retries 10 .
 
 # Run as an unprivileged user
 RUN useradd --create-home --uid 1000 financerag \

@@ -5,7 +5,14 @@ import uuid
 from fastapi import APIRouter, HTTPException, status
 
 from app.api.dependencies import CurrentUser, DbSession
-from app.schemas.research import ResearchCreate, ResearchJobResponse, ResearchStatusResponse
+from app.schemas.research import (
+    EvidenceListResponse,
+    EvidenceResponse,
+    ResearchCreate,
+    ResearchJobResponse,
+    ResearchStatusResponse,
+)
+from app.services.evidence import EvidenceService
 from app.services.research import ResearchService
 
 router = APIRouter()
@@ -48,3 +55,16 @@ async def get_research_job_status(
     if job is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Research job not found")
     return ResearchStatusResponse(id=job.id, status=job.status.value)
+
+
+@router.get("/{job_id}/evidence", response_model=EvidenceListResponse)
+async def list_research_evidence(
+    job_id: uuid.UUID, session: DbSession, current_user: CurrentUser
+) -> EvidenceListResponse:
+    """List evidence attached to a research job's claims (empty for now)."""
+    evidence = await EvidenceService(session).list_for_job(
+        organization_id=current_user.organization_id, research_job_id=job_id
+    )
+    if evidence is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Research job not found")
+    return EvidenceListResponse(items=[EvidenceResponse.model_validate(item) for item in evidence])

@@ -15,8 +15,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.core.config import get_settings  # noqa: E402
-from app.integrations.qdrant import QdrantIntegration  # noqa: E402
+from app.core.config import get_settings
+from app.integrations.qdrant import QdrantIntegration
 
 
 async def main() -> None:
@@ -40,7 +40,10 @@ async def main() -> None:
             settings.qdrant_collection, vector_size=args.vector_size
         )
         if created:
-            print(f"Created collection '{settings.qdrant_collection}' (vector size {args.vector_size}).")
+            print(
+                f"Created collection '{settings.qdrant_collection}' "
+                f"(vector size {args.vector_size})."
+            )
         else:
             print(f"Collection '{settings.qdrant_collection}' already exists.")
     finally:

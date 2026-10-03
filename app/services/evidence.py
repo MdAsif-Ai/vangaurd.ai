@@ -26,7 +26,5 @@ class EvidenceService:
             return None
         return await self._evidence.list_for_job(organization_id, research_job_id)
 
-    async def get(
-        self, *, organization_id: uuid.UUID, evidence_id: uuid.UUID
-    ) -> Evidence | None:
+    async def get(self, *, organization_id: uuid.UUID, evidence_id: uuid.UUID) -> Evidence | None:
         return await self._evidence.get(organization_id, evidence_id)

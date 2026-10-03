@@ -25,7 +25,7 @@ DEFAULT_VECTOR_SIZE = 1024
 class QdrantIntegration:
     """Thin async wrapper around the Qdrant client."""
 
-    def __init__(self, url: str, api_key: str | None = None, timeout: float = 5.0) -> None:
+    def __init__(self, url: str, api_key: str | None = None, timeout: int = 5) -> None:
         self._client = AsyncQdrantClient(url=url, api_key=api_key, timeout=timeout)
 
     async def ping(self) -> bool:

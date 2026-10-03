@@ -12,7 +12,10 @@ from app.core.security import (
     verify_password,
 )
 
-SECRET = "unit-test-secret"
+# PyJWT warns when the HMAC key is shorter than 32 bytes (RFC 7518),
+# so both test secrets are 33+ bytes long.
+SECRET = "unit-test-secret-0123456789abcdef"
+WRONG_SECRET = "wrong-secret-0123456789abcdefghij"
 
 
 def test_password_hash_roundtrip() -> None:
@@ -58,4 +61,4 @@ def test_token_with_wrong_secret_is_rejected() -> None:
         secret_key=SECRET,
     )
     with pytest.raises(jwt.InvalidTokenError):
-        decode_access_token(token, secret_key="another-secret")
+        decode_access_token(token, secret_key=WRONG_SECRET)

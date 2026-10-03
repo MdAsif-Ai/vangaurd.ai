@@ -33,8 +33,8 @@ async def create_document(
 async def list_documents(
     session: DbSession,
     current_user: CurrentUser,
-    skip: Annotated[int, Query(default=0, ge=0)],
-    limit: Annotated[int, Query(default=20, ge=1, le=100)],
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
 ) -> DocumentListResponse:
     """List documents in the caller's organization (paginated)."""
     documents, total = await DocumentService(session).list_documents(

@@ -1,50 +1,87 @@
 name: Docker
 
+# Publishing behavior:
+#   pull request      -> nothing (CI only)
+#   push to main      -> build + push sha-<commit> tags (new version every run)
+#   tag v0.1.0        -> build + push v0.1.0, 0.1, latest, sha-<commit>
+#
+# Requires ONE repository secret:
+#   DOCKERHUB_TOKEN   Docker Hub access token (read/write) for mdasif2006
+
 on:
   push:
+    branches: [main]
     tags: ["v*"]
 
 env:
-  REGISTRY: ghcr.io
-
-permissions:
-  contents: read
-  packages: write
+  DOCKERHUB_USERNAME: mdasif2006
+  API_IMAGE: mdasif2006/vanguard.ai
+  WORKER_IMAGE: mdasif2006/vanguard.ai-worker
 
 jobs:
-  build-and-push:
+  publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Derive image owner (lowercase, GHCR requirement)
-        run: echo "OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Log in to GHCR
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker metadata (api)
+        id: meta_api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.API_IMAGE }}
+          tags: |
+            type=semver,pattern={{raw}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
       - name: Build and push API image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/api.Dockerfile
+          platforms: linux/amd64
           push: true
+          tags: ${{ steps.meta_api.outputs.tags }}
+          labels: ${{ steps.meta_api.outputs.labels }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+      - name: Docker metadata (worker)
+        id: meta_worker
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.WORKER_IMAGE }}
           tags: |
-            ${{ env.REGISTRY }}/${{ env.OWNER }}/financerag-api:latest
-            ${{ env.REGISTRY }}/${{ env.OWNER }}/financerag-api:${{ github.ref_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            type=semver,pattern={{raw}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
       - name: Build and push worker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/worker.Dockerfile
+          platforms: linux/amd64
           push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.OWNER }}/financerag-worker:latest
-            ${{ env.REGISTRY }}/${{ env.OWNER }}/financerag-worker:${{ github.ref_name }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta_worker.outputs.tags }}
+          labels: ${{ steps.meta_worker.outputs.labels }}
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,mode=max,scope=worker
+
+      - name: Smoke test published images (releases only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          docker pull "$API_IMAGE:${{ steps.meta_api.outputs.version }}"
+          docker run --rm "$API_IMAGE:${{ steps.meta_api.outputs.version }}" \
+            python -c "import app.main; print('published api image ok')"
+          docker pull "$WORKER_IMAGE:${{ steps.meta_worker.outputs.version }}"
+          docker run --rm "$WORKER_IMAGE:${{ steps.meta_worker.outputs.version }}" \
+            python -c "from app.workers.celery_app import celery_app; print('worker image ok')"

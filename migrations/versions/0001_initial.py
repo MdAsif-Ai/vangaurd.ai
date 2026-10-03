@@ -29,8 +29,18 @@ def upgrade() -> None:
         "organizations",
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("name", sa.String(length=255), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_organizations")),
         sa.UniqueConstraint("name", name=op.f("uq_organizations_name")),
     )
@@ -40,10 +50,22 @@ def upgrade() -> None:
         sa.Column("organization_id", sa.Uuid(), nullable=False),
         sa.Column("email", sa.String(length=320), nullable=False),
         sa.Column("password_hash", sa.String(length=255), nullable=False),
-        sa.Column("role", _enum("userrole", "admin", "user"), server_default="user", nullable=False),
+        sa.Column(
+            "role", _enum("userrole", "admin", "user"), server_default="user", nullable=False
+        ),
         sa.Column("is_active", sa.Boolean(), server_default=sa.text("true"), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["organization_id"],
             ["organizations.id"],
@@ -70,8 +92,18 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("checksum", sa.String(length=128), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["organization_id"],
             ["organizations.id"],
@@ -80,7 +112,9 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_documents")),
     )
-    op.create_index(op.f("ix_documents_organization_id"), "documents", ["organization_id"], unique=False)
+    op.create_index(
+        op.f("ix_documents_organization_id"), "documents", ["organization_id"], unique=False
+    )
     op.create_index(op.f("ix_documents_status"), "documents", ["status"], unique=False)
     op.create_table(
         "document_versions",
@@ -89,7 +123,12 @@ def upgrade() -> None:
         sa.Column("version", sa.Integer(), nullable=False),
         sa.Column("checksum", sa.String(length=128), nullable=True),
         sa.Column("storage_key", sa.String(length=1024), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["document_id"],
             ["documents.id"],
@@ -97,7 +136,9 @@ def upgrade() -> None:
             ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_document_versions")),
-        sa.UniqueConstraint("document_id", "version", name=op.f("uq_document_versions_document_id_version")),
+        sa.UniqueConstraint(
+            "document_id", "version", name=op.f("uq_document_versions_document_id_version")
+        ),
     )
     op.create_index(
         op.f("ix_document_versions_document_id"), "document_versions", ["document_id"], unique=False
@@ -114,7 +155,12 @@ def upgrade() -> None:
         sa.Column("period", sa.String(length=50), nullable=True),
         sa.Column("page", sa.Integer(), nullable=True),
         sa.Column("source_text", sa.Text(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["document_id"],
             ["documents.id"],
@@ -138,10 +184,22 @@ def upgrade() -> None:
             server_default="queued",
             nullable=False,
         ),
-        sa.Column("mode", _enum("researchmode", "fast", "deep"), server_default="fast", nullable=False),
+        sa.Column(
+            "mode", _enum("researchmode", "fast", "deep"), server_default="fast", nullable=False
+        ),
         sa.Column("result", sa.JSON(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["organization_id"],
             ["organizations.id"],
@@ -165,9 +223,16 @@ def upgrade() -> None:
         "research_messages",
         sa.Column("id", sa.Uuid(), nullable=False),
         sa.Column("research_job_id", sa.Uuid(), nullable=False),
-        sa.Column("role", _enum("messagerole", "user", "assistant", "system", "tool"), nullable=False),
+        sa.Column(
+            "role", _enum("messagerole", "user", "assistant", "system", "tool"), nullable=False
+        ),
         sa.Column("content", sa.Text(), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["research_job_id"],
             ["research_jobs.id"],
@@ -195,7 +260,12 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("confidence", sa.Float(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["research_job_id"],
             ["research_jobs.id"],
@@ -224,7 +294,12 @@ def upgrade() -> None:
             server_default="pending",
             nullable=False,
         ),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["claim_id"],
             ["claims.id"],
@@ -250,7 +325,12 @@ def upgrade() -> None:
         sa.Column("formula", sa.Text(), nullable=True),
         sa.Column("result", sa.JSON(), nullable=True),
         sa.Column("verified", sa.Boolean(), server_default=sa.text("false"), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(
             ["claim_id"],
             ["claims.id"],
@@ -269,10 +349,17 @@ def upgrade() -> None:
         sa.Column("resource_type", sa.String(length=100), nullable=True),
         sa.Column("resource_id", sa.String(length=64), nullable=True),
         sa.Column("metadata", sa.JSON(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_audit_logs")),
     )
-    op.create_index(op.f("ix_audit_logs_organization_id"), "audit_logs", ["organization_id"], unique=False)
+    op.create_index(
+        op.f("ix_audit_logs_organization_id"), "audit_logs", ["organization_id"], unique=False
+    )
     op.create_index(op.f("ix_audit_logs_user_id"), "audit_logs", ["user_id"], unique=False)
     op.create_index(op.f("ix_audit_logs_action"), "audit_logs", ["action"], unique=False)
     op.create_index(op.f("ix_audit_logs_created_at"), "audit_logs", ["created_at"], unique=False)

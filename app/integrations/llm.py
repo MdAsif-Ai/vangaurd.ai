@@ -54,7 +54,7 @@ class LLMClient:
         timeout: float = 60.0,
     ) -> None:
         self._model = model
-        self._base_url = base_url.rstrip("/") if base_url else None
+        self._base_url = base_url.rstrip("/") if base_url else ""
         headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         self._http = httpx.AsyncClient(base_url=self._base_url, headers=headers, timeout=timeout)
 

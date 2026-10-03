@@ -28,11 +28,7 @@ class AuthService:
         """
         normalized_email = email.lower()
         user = await self._users.get_by_email(normalized_email)
-        if (
-            user is None
-            or not user.is_active
-            or not verify_password(password, user.password_hash)
-        ):
+        if user is None or not user.is_active or not verify_password(password, user.password_hash):
             await self._audit.log(
                 organization_id=user.organization_id if user else None,
                 user_id=user.id if user else None,

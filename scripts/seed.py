@@ -15,22 +15,20 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from sqlalchemy import select  # noqa: E402
-from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import get_settings  # noqa: E402
-from app.core.logging import setup_logging  # noqa: E402
-from app.core.security import hash_password  # noqa: E402
-from app.db.database import create_db_engine, create_session_factory  # noqa: E402
-from app.db.models import Organization, User, UserRole  # noqa: E402
+from app.core.config import get_settings
+from app.core.logging import setup_logging
+from app.core.security import hash_password
+from app.db.database import create_db_engine, create_session_factory
+from app.db.models import Organization, User, UserRole
 
 DEFAULT_ORG_NAME = "Default Organization"
 
 
 async def _seed(session: AsyncSession, email: str) -> bool:
-    existing = (
-        await session.execute(select(User).where(User.email == email))
-    ).scalar_one_or_none()
+    existing = (await session.execute(select(User).where(User.email == email))).scalar_one_or_none()
     if existing is not None:
         print(f"Admin user already exists: {email}")
         return False

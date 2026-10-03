@@ -55,9 +55,7 @@ class DocumentService:
         await self._session.commit()
         return document
 
-    async def get(
-        self, *, organization_id: uuid.UUID, document_id: uuid.UUID
-    ) -> Document | None:
+    async def get(self, *, organization_id: uuid.UUID, document_id: uuid.UUID) -> Document | None:
         return await self._documents.get(organization_id, document_id)
 
     async def list_documents(
@@ -84,4 +82,4 @@ class DocumentService:
             resource_type="document",
             resource_id=str(document.id),
         )
-        await self._session.commit()    
+        await self._session.commit()

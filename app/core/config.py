@@ -34,9 +34,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # --- Core infrastructure ---
-    database_url: str = (
-        "postgresql+psycopg://financerag:financerag@localhost:5432/financerag"
-    )
+    database_url: str = "postgresql+psycopg://financerag:financerag@localhost:5432/financerag"
     redis_url: str = "redis://localhost:6379/0"
     qdrant_url: str = "http://localhost:6333"
     qdrant_api_key: SecretStr | None = None

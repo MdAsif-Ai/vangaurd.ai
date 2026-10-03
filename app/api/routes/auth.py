@@ -13,9 +13,7 @@ router = APIRouter()
 async def login(body: LoginRequest, session: DbSession, settings: SettingsDep) -> TokenResponse:
     """Exchange email and password for a JWT access token."""
     try:
-        _, token, expires_in = await AuthService(session, settings).login(
-            body.email, body.password
-        )
+        _, token, expires_in = await AuthService(session, settings).login(body.email, body.password)
     except InvalidCredentialsError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
